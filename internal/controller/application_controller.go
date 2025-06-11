@@ -213,7 +213,7 @@ func (r *ApplicationReconciler) reconcileService(ctx context.Context, app *appv1
 	}
 
 	_, err := controllerutil.CreateOrUpdate(ctx, r.Client, service, func() error {
-		// Set defaults
+		// Set defaults ports to make the service port is standardize. but we could also open this to the application spec as configurable options.
 		serviceType := corev1.ServiceTypeClusterIP
 		servicePort := int32(80)
 		targetPort := int32(8080)

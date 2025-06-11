@@ -4,6 +4,8 @@ metadata:
   labels:
     app.kubernetes.io/name: service-control
     app.kubernetes.io/managed-by: kustomize
-  name: application-sample
+  name: testapp1
+  namespace: testnamespace
 spec:
-  # TODO(user): Add fields here
+  image: nginx:latest
+  replicas: 1
