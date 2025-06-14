@@ -6,6 +6,10 @@ A Kubernetes operator for simplifying application deployments in Kubernetes clus
 
 The Service Control Operator is a Kubernetes controller that provides a simplified, declarative way to deploy and manage applications in a Kubernetes cluster. It introduces a custom resource called `Application` (as per Problem 4) that simplified the complexity of managing individual Kubernetes resources like Deployments, Services, Ingress, and HorizontalPodAutoscalers.
 
+### See it in action
+
+[![asciicast](https://asciinema.org/a/qZXm15fdk1ywq0SWzNwLE4zFn.svg)](https://asciinema.org/a/qZXm15fdk1ywq0SWzNwLE4zFn)
+
 ### Builders
 
 using operator SDK as per the most known to build operators. and in par with kubebuilder.
