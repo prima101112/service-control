@@ -1,0 +1,65 @@
+# Default values for service-control-operator.
+replicaCount: 1
+
+image:
+  repository: prima101112/service-control-operator
+  tag: v0.0.1
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  create: true
+
+podAnnotations: {}
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Controller configuration options
+controller:
+  leaderElection:
+    enabled: true
+    id: "eda011c1.teraskula.com"
+  
+  metrics:
+    enabled: true
+    secure: true
+    port: 8443
+  
+  health:
+    port: 8081
+  
+  webhook:
+    enabled: false
+    certPath: ""

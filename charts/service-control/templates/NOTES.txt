@@ -1,0 +1,26 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+The Service Control Operator has been deployed to your cluster and is now ready to manage Application resources.
+
+To create a new application:
+
+1. Create a YAML file (e.g., my-app.yaml) with the following content:
+
+apiVersion: app.teraskula.com/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  image: nginx
+  tag: latest
+  replicas: 2
+  host: myapp.example.com
+
+2. Apply it to your cluster:
+
+$ kubectl apply -f my-app.yaml
+
+For more information on how to use the Service Control Operator, see the README.md file.

@@ -1,0 +1,66 @@
+apiVersion: app.teraskula.com/v1alpha1
+kind: Application
+metadata:
+  name: advanced-web
+  namespace: default
+spec:
+  # Using jfxs/hello-world as web example UI to see if its working
+  image: jfxs/hello-world
+  tag: latest
+  # Use standard HTTP port
+  port: 8080
+  # Set initial replicas
+  replicas: 3
+  
+  # Environment variables
+  env:
+    - name: APP_NAME
+      value: "Advanced Hello World"
+    - name: LOG_LEVEL
+      value: "info"
+    - name: CONFIG_PATH
+      valueFrom:
+        configMapKeyRef:
+          name: hello-world-config
+          key: config-path
+
+  # Resource requests and limits
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"
+  
+  # Service configuration
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 8095
+    annotations:
+      service.beta.kubernetes.io/description: "Hello World web service"
+  
+  # Ingress configuration
+  ingress:
+    host: advanced-web.example.com
+    path: /
+    tlsSecretName: advanced-web-tls
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/rewrite-target: /
+  
+  # Horizontal Pod Autoscaler configuration
+  hpa:
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  # Health check configuration
+  healthCheck:
+    path: /health
+    port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 15

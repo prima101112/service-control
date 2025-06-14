@@ -1,0 +1,13 @@
+apiVersion: app.teraskula.com/v1alpha1
+kind: Application
+metadata:
+  name: simple-web
+  namespace: default
+spec:
+  # Using jfxs/hello-world as web example UI to see if its working
+  image: jfxs/hello-world
+  tag: latest
+  # Set 2 replicas
+  replicas: 2
+  # Specify the host for ingress
+  host: simple-web.example.com

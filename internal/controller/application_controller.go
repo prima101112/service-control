@@ -14,6 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Note : all this using int32 to make it easy to use in kubernetes api.
+// since if we just use int the compiler machine will be determinde the size 32 or 64.
+// so set default to 32 make it more maintainable and sure
+
 package controller
 
 import (
@@ -66,19 +70,19 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	// Reconcile Deployment
+	// Reconcile Deployment : required
 	if err := r.reconcileDeployment(ctx, app); err != nil {
 		log.Error(err, "Failed to reconcile Deployment")
 		return ctrl.Result{}, err
 	}
 
-	// Reconcile Service
+	// Reconcile Service : required
 	if err := r.reconcileService(ctx, app); err != nil {
 		log.Error(err, "Failed to reconcile Service")
 		return ctrl.Result{}, err
 	}
 
-	// Reconcile Ingress (if host is configured or explicit ingress config exists)
+	// Reconcile Ingress : required (if host is configured or explicit ingress config exists)
 	if app.Spec.Host != "" || app.Spec.Ingress != nil {
 		if err := r.reconcileIngress(ctx, app); err != nil {
 			log.Error(err, "Failed to reconcile Ingress")
@@ -86,7 +90,7 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		}
 	}
 
-	// Reconcile HPA (if configured)
+	// Reconcile HPA (just if configured)
 	if app.Spec.HPA != nil {
 		if err := r.reconcileHPA(ctx, app); err != nil {
 			log.Error(err, "Failed to reconcile HPA")
@@ -107,7 +111,7 @@ func (r *ApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 func (r *ApplicationReconciler) reconcileDeployment(ctx context.Context, app *appv1alpha1.Application) error {
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      app.Name,
+			Name:      fmt.Sprintf("%s-deployment", app.Name),
 			Namespace: app.Namespace,
 		},
 	}
@@ -217,7 +221,7 @@ func (r *ApplicationReconciler) reconcileService(ctx context.Context, app *appv1
 		serviceType := corev1.ServiceTypeClusterIP
 		servicePort := int32(80)
 		targetPort := int32(8080)
-
+		//replace if in application level service spec is defined
 		if app.Spec.Service != nil {
 			if app.Spec.Service.Type != "" {
 				serviceType = app.Spec.Service.Type
@@ -262,7 +266,7 @@ func (r *ApplicationReconciler) reconcileService(ctx context.Context, app *appv1
 	return err
 }
 
-// ingress reconcile
+// ingress reconcile TODO cert still not tested yet
 func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1alpha1.Application) error {
 	ingress := &networkingv1.Ingress{
 		ObjectMeta: metav1.ObjectMeta{
@@ -289,7 +293,7 @@ func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1
 			servicePort = *app.Spec.Service.Port
 		}
 
-		// Define ingress spec
+		// define ingress spec
 		ingress.Spec = networkingv1.IngressSpec{
 			Rules: []networkingv1.IngressRule{
 				{
@@ -302,7 +306,7 @@ func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1
 									PathType: &pathType,
 									Backend: networkingv1.IngressBackend{
 										Service: &networkingv1.IngressServiceBackend{
-											Name: fmt.Sprintf("%s-service", app.Name),
+											Name: fmt.Sprintf("%s-service", app.Name), // related service
 											Port: networkingv1.ServiceBackendPort{
 												Number: servicePort,
 											},
@@ -387,9 +391,9 @@ func (r *ApplicationReconciler) reconcileHPA(ctx context.Context, app *appv1alph
 			})
 		}
 
-		// Default to CPU 70% if no metrics specified
+		// Default to CPU 75% if no metrics specified
 		if len(metrics) == 0 {
-			cpuTarget := int32(70)
+			cpuTarget := int32(75)
 			metrics = append(metrics, autoscalingv2.MetricSpec{
 				Type: autoscalingv2.ResourceMetricSourceType,
 				Resource: &autoscalingv2.ResourceMetricSource{
@@ -407,7 +411,7 @@ func (r *ApplicationReconciler) reconcileHPA(ctx context.Context, app *appv1alph
 			ScaleTargetRef: autoscalingv2.CrossVersionObjectReference{
 				APIVersion: "apps/v1",
 				Kind:       "Deployment",
-				Name:       app.Name,
+				Name:       fmt.Sprintf("%s-deployment", app.Name), // related deployment
 			},
 			MinReplicas: &minReplicas,
 			MaxReplicas: app.Spec.HPA.MaxReplicas,

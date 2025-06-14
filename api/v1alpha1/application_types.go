@@ -163,7 +163,7 @@ type ApplicationStatus struct {
 // Application is the Schema for the applications API.
 type Application struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"` // include metadata like name, namespace, labels, etc
 
 	Spec   ApplicationSpec   `json:"spec,omitempty"`
 	Status ApplicationStatus `json:"status,omitempty"`

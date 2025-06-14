@@ -199,6 +199,24 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 undeploy: kustomize ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
 
+##@ Helm # not generated i am just adding this to update heml chart with the latest CRDs and prepare for release
+
+.PHONY: build-helm
+build-helm: manifests ## Update Helm chart with the latest CRDs and prepare for release
+	echo "Updating Helm chart with the latest CRDs..."
+	mkdir -p charts/service-control/crds
+	cp config/crd/bases/app.teraskula.com_applications.yaml charts/service-control/crds/
+	echo "Add Helm ownership metadata to CRD check again this is edited by AI"
+	awk ' \
+		/^metadata:/ { print; in_metadata=1; next } \
+		in_metadata && /^  annotations:/ { print; print "    meta.helm.sh/release-name: service-control"; print "    meta.helm.sh/release-namespace: default"; next } \
+		in_metadata && /^  name:/ { print "  labels:"; print "    app.kubernetes.io/managed-by: Helm"; print; next } \
+		/^spec:/ { in_metadata=0 } \
+		{ print } \
+	' charts/service-control/crds/app.teraskula.com_applications.yaml > charts/service-control/crds/app.teraskula.com_applications.yaml.tmp && \
+	mv charts/service-control/crds/app.teraskula.com_applications.yaml.tmp charts/service-control/crds/app.teraskula.com_applications.yaml
+	echo "Helm chart updated with the latest CRDs."
+
 ##@ Dependencies
 
 ## Location to install dependencies to

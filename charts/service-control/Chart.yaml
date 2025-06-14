@@ -1,0 +1,14 @@
+apiVersion: v2
+name: service-control
+description: A Helm chart for the Service Control Operator
+type: application
+version: 0.1.0
+appVersion: v0.0.1
+keywords:
+  - kubernetes
+  - operator
+  - application
+  - deployment
+maintainers:
+  - name: Your Name
+    email: your.email@example.com
