@@ -41,6 +41,20 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Default release name
+*/}}
+{{- define "service-control.releaseName" -}}
+{{- default "service-control" .Release.Name }}
+{{- end }}
+
+{{/*
+Default release namespace
+*/}}
+{{- define "service-control.releaseNamespace" -}}
+{{- default "service-control-system" .Release.Namespace }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "service-control.selectorLabels" -}}

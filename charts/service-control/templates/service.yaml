@@ -4,6 +4,9 @@ metadata:
   name: {{ include "service-control.fullname" . }}
   labels:
     {{- include "service-control.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ include "service-control.releaseName" . }}
+    meta.helm.sh/release-namespace: {{ include "service-control.releaseNamespace" . }}
 spec:
   type: ClusterIP
   ports:

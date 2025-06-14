@@ -217,10 +217,12 @@ func (r *ApplicationReconciler) reconcileService(ctx context.Context, app *appv1
 	}
 
 	_, err := controllerutil.CreateOrUpdate(ctx, r.Client, service, func() error {
+
 		// Set defaults ports to make the service port is standardize. but we could also open this to the application spec as configurable options.
 		serviceType := corev1.ServiceTypeClusterIP
 		servicePort := int32(80)
 		targetPort := int32(8080)
+
 		//replace if in application level service spec is defined
 		if app.Spec.Service != nil {
 			if app.Spec.Service.Type != "" {
@@ -276,7 +278,6 @@ func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1
 	}
 
 	_, err := controllerutil.CreateOrUpdate(ctx, r.Client, ingress, func() error {
-		// Determine host from spec.host or ingress config
 		host := app.Spec.Host
 		if app.Spec.Ingress != nil && app.Spec.Ingress.Host != "" {
 			host = app.Spec.Ingress.Host
@@ -297,7 +298,7 @@ func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1
 		ingress.Spec = networkingv1.IngressSpec{
 			Rules: []networkingv1.IngressRule{
 				{
-					Host: host,
+					Host: host, // from spec if specified
 					IngressRuleValue: networkingv1.IngressRuleValue{
 						HTTP: &networkingv1.HTTPIngressRuleValue{
 							Paths: []networkingv1.HTTPIngressPath{
@@ -320,9 +321,17 @@ func (r *ApplicationReconciler) reconcileIngress(ctx context.Context, app *appv1
 			},
 		}
 
+		// Set default ingress class to nginx
+		ingressClassName := "nginx"
+
 		// Configure ingress class and additional settings if explicit ingress config exists
+		if app.Spec.Ingress != nil && app.Spec.Ingress.IngressClassName != nil {
+			ingressClassName = *app.Spec.Ingress.IngressClassName
+		}
+		ingress.Spec.IngressClassName = &ingressClassName
+
+		// Configure additional settings if explicit ingress config exists
 		if app.Spec.Ingress != nil {
-			ingress.Spec.IngressClassName = app.Spec.Ingress.IngressClassName
 
 			// Add TLS if specified
 			if app.Spec.Ingress.TLSSecretName != "" {

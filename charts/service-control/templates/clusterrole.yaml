@@ -5,6 +5,9 @@ metadata:
   name: {{ include "service-control.fullname" . }}-manager-role
   labels:
     {{- include "service-control.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ include "service-control.releaseName" . }}
+    meta.helm.sh/release-namespace: {{ include "service-control.releaseNamespace" . }}
 rules:
 - apiGroups:
   - app.teraskula.com
@@ -72,6 +75,18 @@ rules:
   - autoscaling
   resources:
   - horizontalpodautoscalers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
   verbs:
   - create
   - delete

@@ -5,6 +5,9 @@ metadata:
   name: {{ include "service-control.fullname" . }}-manager-rolebinding
   labels:
     {{- include "service-control.labels" . | nindent 4 }}
+  annotations:
+    meta.helm.sh/release-name: {{ include "service-control.releaseName" . }}
+    meta.helm.sh/release-namespace: {{ include "service-control.releaseNamespace" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -12,5 +15,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ include "service-control.serviceAccountName" . }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ include "service-control.releaseNamespace" . }}
 {{- end }}
