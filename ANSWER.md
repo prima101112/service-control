@@ -39,7 +39,7 @@ resources via controller logic.
 
 10. Record the successful execution of the controller via Asciinema or any other tools that suits you. Include that in README
 
-- TODO
+- Done
 
 11. Make an opensource git repository of your project and provide us the link.
 
