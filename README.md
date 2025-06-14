@@ -183,15 +183,9 @@ spec:
 kubectl get applications
 ```
 
-Example output:
-```
-NAME      IMAGE    TAG      HOST                     REPLICAS   READY   PHASE     AGE
-my-app    nginx    latest   myapp.example.com        2          2       Running   5m
-```
-
 For detailed status:
 ```bash
-kubectl describe application my-app
+kubectl describe application simple-web
 ```
 
 ## Development
@@ -221,10 +215,13 @@ make build-helm
 ## Resource to build this project
 
 https://sdk.operatorframework.io/docs/building-operators/golang/tutorial/
-https://github.com/operator-framework/operator-sdk/issues/5575
 
 
+## My plan for next improvement
 
+All operator metrics are already exposed in the helmchart but i am not setting any of it yet. it will be good if we have monitoring for self managed or self developed operator
+
+https://sdk.operatorframework.io/docs/best-practices/observability-best-practices/
 
 ## License
 
