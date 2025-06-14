@@ -223,7 +223,7 @@ func (r *ApplicationReconciler) reconcileService(ctx context.Context, app *appv1
 		servicePort := int32(80)
 		targetPort := int32(8080)
 
-		//replace if in application level service spec is defined
+		// Replace if in application level service spec is defined
 		if app.Spec.Service != nil {
 			if app.Spec.Service.Type != "" {
 				serviceType = app.Spec.Service.Type
