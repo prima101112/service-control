@@ -437,7 +437,7 @@ func (r *ApplicationReconciler) updateStatus(ctx context.Context, app *appv1alph
 	// Get deployment status
 	deployment := &appsv1.Deployment{}
 	err := r.Get(ctx, types.NamespacedName{
-		Name:      app.Name,
+		Name:      fmt.Sprintf("%s-deployment", app.Name),
 		Namespace: app.Namespace,
 	}, deployment)
 
